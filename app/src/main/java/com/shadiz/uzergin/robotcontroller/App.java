@@ -24,7 +24,6 @@ public class App extends Application {
         context = this;
         setAppComponent();
         startService(new Intent(this, SensorService.class));
-
     }
 
     public static AppComponent getAppComponent() {

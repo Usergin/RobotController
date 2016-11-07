@@ -31,4 +31,8 @@
     <string name="default_xRperc">60</string>
     <string name="default_pwmMax">255</string>
     <string name="handle_control">Перейти к ручному управлению устройством</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -28,7 +28,6 @@ public interface AppComponent {
     Calendar getCalendar();
 
     void inject(MapsActivity activity);
-
     void inject(SensorService sensorService);
 
 }

@@ -23,6 +23,7 @@ import dagger.Provides;
 public class AppModule {
     private App app;
     private EventBus eventBus;
+    private Resources resources;
 
     public AppModule(App app) {
         this.app = app;

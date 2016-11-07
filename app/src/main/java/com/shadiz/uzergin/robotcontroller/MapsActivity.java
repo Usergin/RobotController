@@ -1,8 +1,12 @@
 package com.shadiz.uzergin.robotcontroller;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -16,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.shadiz.uzergin.robotcontroller.handlecontrol.HandleControlActivity;
 import com.shadiz.uzergin.robotcontroller.model.OrientationValue;
 import com.shadiz.uzergin.robotcontroller.view.CompassView;
 
@@ -29,47 +34,57 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
 
     private static final int REQUEST_LOCATION = 14;
     @Inject
     EventBus eventBus;
-    @BindView(R.id.fabtoolbar)
-    FABToolbarLayout layout;
+    @BindView(R.id.fabtoolbar_fab)
+    View fab;
     @BindView(R.id.connectServer)
     View connectServer;
     @BindView(R.id.bluetooth)
     View bluetooth;
     @BindView(R.id.handleControl)
     View handleControl;
-    @BindView(R.id.fabtoolbar_fab)
-    View fab;
-    @BindView(R.id.compassView)
-    CompassView compassView;
+    private CompassView compassView;
+    private FABToolbarLayout layout;
     private GoogleMap map;
     private SupportMapFragment mapFragment;
+
+    @OnClick(R.id.connectServer)
+    public void connectServer(View view) {
+        Toast.makeText(this, "ic_connect_to_server", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.bluetooth)
+    public void bluetooth(View view) {
+        Toast.makeText(this, "ic_bluetooth", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.handleControl)
+    public void handleControl(View view) {
+        Toast.makeText(this, "ic_bluetooth", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, HandleControlActivity.class));
+    }
+
+    //
+    @OnClick(R.id.fabtoolbar_fab)
+    public void fabtoolbarFab(View view) {
+        layout.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
+        layout = (FABToolbarLayout) findViewById(R.id.fabtoolbar);
+        compassView = (CompassView) findViewById(R.id.compassView);
 
-//        connectServer.setOnClickListener(this);
-//        bluetooth.setOnClickListener(this);
-//        handleControl.setOnClickListener(this);
-
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                layout.show();
-//            }
-//        });
         if (checkLocationPermission()) {
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            initialMap();
         }
     }
 
@@ -84,7 +99,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    ;
+    private void initialMap() {
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
 
     private boolean checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -99,7 +118,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
-        layout.hide();
+        if (layout.showContextMenu())
+            layout.hide();
+        else
+            super.onBackPressed();
     }
 
     @Override
@@ -114,26 +136,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         eventBus.getDefault().unregister(this);
     }
 
-    @OnClick(R.id.connectServer)
-    public void connectServer(View view) {
-        Toast.makeText(this, "ic_connect_to_server", Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.bluetooth)
-    public void bluetooth(View view) {
-        Toast.makeText(this, "ic_bluetooth", Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.handleControl)
-    public void handleControl(View view) {
-        Toast.makeText(this, "ic_handle", Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.fabtoolbar_fab)
-    public void fabtoolbarFab(View view) {
-        Toast.makeText(this, " layout.show();", Toast.LENGTH_SHORT).show();
-        layout.show();
-    }
 
     /**
      * Manipulates the map once available.
@@ -144,15 +146,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        checkLocationPermission();
+//        checkLocationPermission();
         // Add a marker in Sydney and move the camera
         map.setMyLocationEnabled(true);
-        map.setPadding(0, 700, 0, 0);
+        Resources resources = this.getResources();
+        Configuration config = resources.getConfiguration();
+
+        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            map.setPadding(0, 500, 0, 0);
+        } else if (config.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            map.setPadding(0, 700, 0, 0);
+        }
+
         map.getUiSettings().setIndoorLevelPickerEnabled(true);
         map.getUiSettings().setMapToolbarEnabled(false);
         map.getUiSettings().setTiltGesturesEnabled(true);
@@ -171,7 +182,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                initialMap();
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission_group.LOCATION},
@@ -179,4 +190,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    @Override
+    public void onClick(View view) {
+        Toast.makeText(this, "Element clicked", Toast.LENGTH_SHORT).show();
+    }
+
 }

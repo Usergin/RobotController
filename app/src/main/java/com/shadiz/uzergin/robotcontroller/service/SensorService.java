@@ -70,7 +70,6 @@ public class SensorService extends Service {
 
                     @Override
                     public void onNext(RxSensorEvent sensorEvent) {
-                        Log.d("RxSensor", "event: " + sensorEvent.toString());
                         setAccelerometerValues(sensorEvent.values);
                         eventBus.getDefault().post(new OrientationValue(calculateOrientation()));
                     }
@@ -86,7 +85,6 @@ public class SensorService extends Service {
 
                     @Override
                     public void onNext(RxSensorEvent sensorEvent) {
-                        Log.d("RxMagnSensor", "event: " + sensorEvent.toString());
                         setMagneticValues(sensorEvent.values);
                         eventBus.getDefault().post(new OrientationValue(calculateOrientation()));
                     }

@@ -42,8 +42,8 @@
 
         <com.shadiz.uzergin.robotcontroller.view.CompassView
             android:id="@+id/compassView"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="8dp"
@@ -60,11 +60,12 @@
                 android:id="@id/fabtoolbar_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_speaker"
-                app:borderWidth="0dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
+                android:onClick="fabtoolbarFab"
 
+                android:src="@drawable/ic_speaker"
+                app:borderWidth="0dp"
                 app:fabSize="normal"/>
 
         </RelativeLayout>
@@ -81,6 +82,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="connectServer"
+
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_connected_server"/>
 
@@ -89,7 +92,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="bluetooth"
                 android:scaleType="centerInside"
+
                 android:src="@drawable/ic_bluetooth"/>
 
             <ImageView
@@ -97,7 +102,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:onClick="handleControl"
                 android:scaleType="centerInside"
+
                 android:src="@drawable/ic_handle_control"/>
 
         </LinearLayout>
